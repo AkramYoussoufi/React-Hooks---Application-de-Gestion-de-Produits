@@ -53,8 +53,34 @@ Pour chaque exercice :
 
 _Votre réponse pour l'exercice 1 :_
 ```
-Expliquez votre solution ici
-[Ajoutez vos captures d'écran]
+J'ai implémenté une recherche en temps réel avec debounce en créant plusieurs composants et hooks :
+
+Hook useDebounce : Un hook personnalisé qui retarde la mise à jour d'une valeur pour éviter des appels trop fréquents pendant la saisie.
+Modification du hook useProductSearch :
+
+Ajout de la gestion du terme de recherche
+Implémentation du filtrage des produits en fonction du terme recherché
+Utilisation du hook useDebounce pour éviter trop de rendus lors de la saisie
+
+
+Contexte de recherche :
+
+Création d'un contexte ProductSearchContext pour partager le terme de recherche entre les composants
+
+
+Modification du composant ProductSearch :
+
+Ajout d'une interface utilisateur améliorée avec icône de recherche
+Bouton pour effacer la recherche
+Connexion au contexte de recherche
+
+
+Mise à jour du composant ProductList :
+
+Affichage du nombre de résultats
+Gestion du cas où aucun produit ne correspond à la recherche
+Utilisation du terme de recherche pour filtrer les produits
+![alt text](TP_1.png)
 ```
 
 ### Exercice 2 : Context et Internationalisation
