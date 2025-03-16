@@ -80,7 +80,7 @@ Mise à jour du composant ProductList :
 Affichage du nombre de résultats
 Gestion du cas où aucun produit ne correspond à la recherche
 Utilisation du terme de recherche pour filtrer les produits
-![alt text](TP_1.png)
+![alt text](./TP_1.png)
 ```
 
 ### Exercice 2 : Context et Internationalisation
