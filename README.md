@@ -92,9 +92,43 @@ Utilisation du terme de recherche pour filtrer les produits
 
 _Votre réponse pour l'exercice 2 :_
 ```
-Expliquez votre solution ici
-[Ajoutez vos captures d'écran]
+J'ai implémenté une solution robuste d'internationalisation pour l'application en suivant les meilleures pratiques :
+
+Architecture i18n professionnelle :
+
+Séparation claire des traductions dans un fichier dédié
+Utilisation de hooks personnalisés pour une meilleure réutilisabilité
+Support complet pour le français, l'anglais et l'espagnol
+
+
+Hooks et contextes améliorés :
+
+Hook useLanguage pour accéder facilement aux fonctions de traduction
+Hook useLocalStorage pour la persistance des préférences de langue
+Architecture de contexte optimisée avec gestion d'erreurs
+
+
+Sélecteur de langue intuitif :
+
+Interface utilisateur avec drapeaux et noms de langues
+Gestion manuelle du dropdown pour éviter les dépendances externes
+Indicateur visuel de la langue actuellement sélectionnée
+
+
+Traduction complète de l'interface :
+
+Tous les textes statiques de l'application sont internationalisés
+Messages d'erreur, titres, boutons et libellés traduits
+Interface utilisateur adaptée aux différentes langues
+
+
+Amélioration de l'architecture des composants :
+
+Séparation des préoccupations avec un composant AppContent
+Simplification de l'arbre de composants pour une meilleure performance
+Organisation claire des responsabilités
 ```
+![alt text](image.png)
 
 ### Exercice 3 : Hooks Personnalisés
 #### Objectif : Créer des hooks réutilisables
@@ -105,8 +139,84 @@ Expliquez votre solution ici
 
 _Votre réponse pour l'exercice 3 :_
 ```
-Expliquez votre solution ici
-[Ajoutez vos captures d'écran]
+Le hook useDebounce est un hook personnalisé qui permet de retarder la mise à jour d'une valeur. C'est particulièrement utile pour les opérations coûteuses comme les recherches en temps réel, où vous ne voulez pas lancer une recherche à chaque frappe de clavier.
+javascriptCopyimport { useState, useEffect } from 'react';
+
+const useDebounce = (value, delay = 500) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    // Créer un timer qui mettra à jour la valeur après le délai spécifié
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    // Nettoyer le timer si value change avant la fin du délai
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+export default useDebounce;
+Fonctionnement :
+
+Quand value change, un timer est lancé
+Si value change à nouveau avant la fin du timer, le timer précédent est annulé et un nouveau est créé
+Une fois le délai écoulé sans changement, debouncedValue est mise à jour
+
+Le hook useLocalStorage est un hook personnalisé qui étend la fonctionnalité de useState pour persister automatiquement les données dans le localStorage du navigateur.
+javascriptCopyimport { useState, useEffect } from 'react';
+
+const useLocalStorage = (key, initialValue) => {
+  // Fonction pour récupérer la valeur initiale
+  const getStoredValue = () => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  };
+
+  // État basé sur la valeur dans localStorage
+  const [storedValue, setStoredValue] = useState(getStoredValue);
+
+  // Fonction pour mettre à jour la valeur
+  const setValue = (value) => {
+    try {
+      // Permettre la valeur d'être une fonction (comme dans useState)
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      
+      // Sauvegarder dans l'état
+      setStoredValue(valueToStore);
+      
+      // Sauvegarder dans localStorage
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error(`Error setting localStorage key "${key}":`, error);
+    }
+  };
+
+  // Mettre à jour localStorage si la clé change
+  useEffect(() => {
+    const storedValue = getStoredValue();
+    setStoredValue(storedValue);
+  }, [key]);
+
+  return [storedValue, setValue];
+};
+
+export default useLocalStorage;
+Fonctionnement :
+
+À l'initialisation, le hook vérifie si une valeur existe déjà dans localStorage
+La fonction setValue met à jour à la fois l'état React et le localStorage
+Les erreurs sont gérées proprement pour éviter les plantages de l'application
+Le hook réagit aux changements de la clé pour mettre à jour l'état
 ```
 
 ### Exercice 4 : Gestion Asynchrone et Pagination
@@ -118,10 +228,36 @@ Expliquez votre solution ici
 
 _Votre réponse pour l'exercice 4 :_
 ```
-Expliquez votre solution ici
-[Ajoutez vos captures d'écran]
-```
+Exercice 4 : Gestion Asynchrone et Pagination
+Solution implémentée
+Pour cet exercice, j'ai développé une solution complète de gestion asynchrone des données et de pagination pour l'application de catalogue de produits.
+Gestion asynchrone avec le bouton de rechargement
+J'ai implémenté un bouton de rechargement qui permet aux utilisateurs de rafraîchir les données depuis l'API sans recharger la page entière. Cette fonctionnalité est particulièrement utile pour les applications qui affichent des données en temps réel ou qui doivent être régulièrement mises à jour.
+Dans le hook useProductSearch, j'ai ajouté une fonction reloadProducts qui :
 
+Réinitialise l'état de chargement
+Exécute un nouvel appel à l'API
+Gère les erreurs potentielles
+Réinitialise la pagination à la première page
+
+L'utilisateur bénéficie d'un retour visuel clair pendant le rechargement grâce à un indicateur de chargement (spinner).
+Système de pagination avancé
+La pagination mise en place offre une navigation intuitive à travers les produits avec :
+
+Une division dynamique des produits en pages selon la préférence de l'utilisateur
+Des contrôles de navigation complets (boutons Précédent/Suivant et numéros de page)
+Un sélecteur permettant de choisir le nombre de produits par page (3, 6, 9 ou 12)
+Un indicateur montrant la position actuelle (Page X sur Y)
+Une mise en évidence visuelle de la page active
+
+Le système de pagination réagit intelligemment aux actions de l'utilisateur :
+
+Retour automatique à la première page après une recherche
+Désactivation des boutons de navigation lorsqu'ils atteignent leurs limites
+Adaptation du nombre total de pages lors de la modification du nombre d'éléments par page
+```
+![alt text](image-1.png)
+![alt text](image-2.png)
 ## Rendu
 
 - Ajoutez l'URL de votre dépôt Github dans  **Classroom** et envoyer la réponse dès le démarage de votre projet.
